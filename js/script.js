@@ -11,9 +11,9 @@ camera.position.z = 4;
 // Rotate
 camera.rotation.x = 0.4;
 const planeMaterial = new THREE.MeshPhongMaterial({
-    specular: 0xfb8717,         // Specular color of the material (light)
-    color: 0xFF4E50,            // Geometry color in hexadecimal
-    emissive: 0xFF4E50,         // Emissive color of the material (dark)
+    specular: 0x097ecb,         // Specular color of the material (light)
+    color: 0x097ecb,            // Geometry color in hexadecimal
+    emissive: 0x111111,         // Emissive color of the material (dark)
     shininess: 30,              // How shiny the specular highlight is
     shading: THREE.FlatShading  // NoShading, FlatShading or SmoothShading
 });
@@ -31,11 +31,11 @@ const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
 // Create a wireframe
 const wireframeMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFF4E50,
+    color: 0x111111,
     wireframe: true
 });
 const wireframe = new THREE.Mesh(planeGeometry, wireframeMaterial);
-scene.add(wireframe);
+//scene.add(wireframe);
 scene.add(plane);
 
 var light = new THREE.DirectionalLight(0xffffff, 0.3);
