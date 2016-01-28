@@ -1,69 +1,69 @@
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(
-    75,           // Field of view
-    window.innerWidth / window.innerHeight, // Aspect ratio
-    1,            // Near clipping plane
-    10000         // Far clipping plane
-);
-// Distance camera from the center of the scene.
-camera.position.z = 4;
-
-// Rotate
-camera.rotation.x = 0.4;
 const planeMaterial = new THREE.MeshPhongMaterial({
-    specular: 0x097ecb,         // Specular color of the material (light)
-    color: 0x097ecb,            // Geometry color in hexadecimal
+    specular: 0xF8D4B0,         // Specular color of the material (light)
+    color: 0x2B2F3B,            // Geometry color in hexadecimal
     emissive: 0x111111,         // Emissive color of the material (dark)
-    shininess: 30,              // How shiny the specular highlight is
+    shininess: 5,              // How shiny the specular highlight is
+    side: THREE.DoubleSide,
     shading: THREE.FlatShading  // NoShading, FlatShading or SmoothShading
 });
-const planeGeometry = new THREE.PlaneGeometry(30, 60, 60, 120);
-planeGeometry.vertices.map(function (vertex) {
-    vertex.x += -.5 + Math.random() / 10;
-    vertex.y += -.5 + Math.random() / 10;
-    vertex.z = -.5 + Math.random() / 5;
-    return vertex;
-});
+var scene, camera, renderer;
 
-// Update geometry.
-planeGeometry.computeFaceNormals();
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+var WIDTH  = window.innerWidth;
+var HEIGHT = window.innerHeight;
 
-// Create a wireframe
-const wireframeMaterial = new THREE.MeshBasicMaterial({
-    color: 0x111111,
-    wireframe: true
-});
-const wireframe = new THREE.Mesh(planeGeometry, wireframeMaterial);
-//scene.add(wireframe);
-scene.add(plane);
+var SPEED = 0.01;
 
-var light = new THREE.DirectionalLight(0xffffff, 0.3);
-light.position.set(1, 1, 1);
-scene.add(light);
+function init() {
+    scene = new THREE.Scene();
 
-var renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+    initMesh();
+    initCamera();
+    initLights();
+    initRenderer();
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = false;
+
+    document.body.appendChild(renderer.domElement);
+}
+
+function initCamera() {
+    camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 1, 10);
+    camera.position.set(0,0,2.5);
+    camera.lookAt(scene.position);
+}
+
+
+function initRenderer() {
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(WIDTH, HEIGHT);
+}
+
+function initLights() {
+    var light = new THREE.PointLight( 0xffffff, 1.2, 100 );
+    light.position.set( 0,0,3 );
+    scene.add( light );
+
+}
+
+var mesh = null;
+function initMesh() {
+    var loader = new THREE.JSONLoader();
+    loader.load('models/untitled7.json', function(geometry) {
+        mesh = new THREE.Mesh(geometry, planeMaterial);
+        mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.75;
+        mesh.translation = THREE.GeometryUtils.center(geometry);
+        scene.add(mesh);
+    });
+}
 
 
 function render() {
     requestAnimationFrame(render);
-    light.position.x = -1 + (mouseX / window.innerWidth) * 2;
-    light.position.y = 1 - (mouseY / window.innerHeight) * 2;
     renderer.render(scene, camera);
 }
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-window.addEventListener('resize', onWindowResize, false);
+
+init();
 render();
-var mouseX = 0;
-var mouseY = 0;
-function onMouseMove(event) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-}
-window.addEventListener('mousemove', onMouseMove, false);
