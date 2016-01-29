@@ -16,7 +16,7 @@ var backgroundMaterial = new THREE.MeshPhongMaterial({
 
 
 var WIDTH = document.body.clientWidth;
-var HEIGHT = document.body.clientHeight;
+var HEIGHT = window.innerHeight;
 var mouseX = 0;
 var mouseY = 0;
 
@@ -28,7 +28,7 @@ var renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(WIDTH, HEIGHT);
 renderer.autoClear = false;
 
-document.getElementById('video_element').appendChild(renderer.domElement);
+document.getElementById('container').appendChild(renderer.domElement);
 
 camera.position.set(2, 0.6, -0.6);
 camera.rotation.set(-2.4, 1.2, 2.4);
