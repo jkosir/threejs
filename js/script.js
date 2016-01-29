@@ -14,24 +14,17 @@ var backgroundMaterial = new THREE.MeshPhongMaterial({
     shading: THREE.FlatShading  // NoShading, FlatShading or SmoothShading
 });
 
+var mouseX = 0;
+var mouseY = 0;
+
 var scene = new THREE.Scene();
 var bgScene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
 var bgCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
 var renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.autoClear = false;
 
-var controls = new THREE.OrbitControls(bgCamera, renderer.domElement);
-controls.addEventListener('change', function () {
-    console.log(bgCamera.position);
-    console.log(bgCamera.rotation);
-});
-controls.target.set(0, 0, 0);
-controls.enableDamping = true;
-controls.dampingFactor = 0.25;
-controls.enableZoom = true;
-
-//document.body.appendChild(renderer.domElement);
 document.getElementById('container').appendChild(renderer.domElement);
 
 camera.position.set(2, 0.6, -0.6);
@@ -74,7 +67,13 @@ loader.load('models/loHrib.json', function (geometry) {
 
 function render() {
     requestAnimationFrame(render);
-    renderer.render(scene, camera);
+    bgCamera.position.z = -0.5 + mouseX/window.innerWidth;
+    bgCamera.position.y = -0.5 + mouseY/window.innerHeight;
+    renderer.render(bgScene, bgCamera);
+    renderer.render(scene,camera);
 }
-
 render();
+document.addEventListener('mousemove', function(event){
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+});
