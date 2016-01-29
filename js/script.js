@@ -1,4 +1,4 @@
-const planeMaterial = new THREE.MeshPhongMaterial({
+var planeMaterial = new THREE.MeshPhongMaterial({
     specular: 0x454237,         // Specular color of the material (light)
     color: 0x1D242A,            // Geometry color in hexadecimal
     shininess: 5,              // How shiny the specular highlight is
@@ -14,6 +14,9 @@ var backgroundMaterial = new THREE.MeshPhongMaterial({
     shading: THREE.FlatShading  // NoShading, FlatShading or SmoothShading
 });
 
+
+var WIDTH = document.body.clientWidth;
+var HEIGHT = document.body.clientHeight;
 var mouseX = 0;
 var mouseY = 0;
 
@@ -22,15 +25,15 @@ var bgScene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
 var bgCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
 var renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(WIDTH, HEIGHT);
 renderer.autoClear = false;
 
-document.getElementById('container').appendChild(renderer.domElement);
+document.getElementById('video_element').appendChild(renderer.domElement);
 
 camera.position.set(2, 0.6, -0.6);
 camera.rotation.set(-2.4, 1.2, 2.4);
 bgCamera.position.set(1, 0, 0);
-bgCamera.rotation.set(0,1.5,0);
+bgCamera.rotation.set(0, 1.5, 0);
 
 
 // Lights
@@ -42,7 +45,7 @@ var light2 = new THREE.PointLight(0xffffff, 0.3, 100);
 light2.position.set(3, 2, -2.5);
 scene.add(light2);
 
-var bgLight = new THREE.PointLight(0xffffff, 1.1, 100);
+var bgLight = new THREE.PointLight(0xffffff, 1.3, 100);
 bgLight.position.set(3, 2, -2.5);
 bgScene.add(bgLight);
 
@@ -67,13 +70,22 @@ loader.load('models/lohrib.json', function (geometry) {
 
 function render() {
     requestAnimationFrame(render);
-    bgCamera.position.z = -0.5 + mouseX/window.innerWidth;
-    bgCamera.position.y = -0.5 + mouseY/window.innerHeight;
+    bgCamera.position.z = -0.5 + mouseX / WIDTH;
+    bgCamera.position.y = -0.5 + mouseY / HEIGHT;
     renderer.render(bgScene, bgCamera);
-    renderer.render(scene,camera);
+    renderer.render(scene, camera);
 }
 render();
-document.addEventListener('mousemove', function(event){
+document.addEventListener('mousemove', function (event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
+});
+document.addEventListener('resize', function () {
+    WIDTH = document.body.clientWidth;
+    HEIGHT = document.body.clientHeight;
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
+    bgCamera.aspect = WIDTH / HEIGHT;
+    bgCamera.updateProjectionMatrix();
+    renderer.setSize(WIDTH, HEIGHT);
 });
