@@ -59,7 +59,7 @@ plane.position.set(-5, 0, 0);
 plane.rotation.y = Math.PI / 2;
 bgScene.add(plane);
 var loader = new THREE.JSONLoader();
-loader.load('models/loHrib.json', function (geometry) {
+loader.load('models/lohrib.json', function (geometry) {
     var mesh = new THREE.Mesh(geometry, planeMaterial);
     mesh.position.y = -0.3;
     scene.add(mesh);
