@@ -1,69 +1,80 @@
 const planeMaterial = new THREE.MeshPhongMaterial({
-    specular: 0xF8D4B0,         // Specular color of the material (light)
-    color: 0x2B2F3B,            // Geometry color in hexadecimal
-    emissive: 0x111111,         // Emissive color of the material (dark)
+    specular: 0x454237,         // Specular color of the material (light)
+    color: 0x1D242A,            // Geometry color in hexadecimal
     shininess: 5,              // How shiny the specular highlight is
     side: THREE.DoubleSide,
+    shading: THREE.FlatShading,  // NoShading, FlatShading or SmoothShading
+    metal: true
+});
+var backgroundMaterial = new THREE.MeshPhongMaterial({
+    specular: 0x76A1B8,         // Specular color of the material (light)
+    color: 0x618898,            // Geometry color in hexadecimal
+    side: THREE.FrontSide,
+    shininess: 1,
     shading: THREE.FlatShading  // NoShading, FlatShading or SmoothShading
 });
-var scene, camera, renderer;
 
-var WIDTH  = window.innerWidth;
-var HEIGHT = window.innerHeight;
+var scene = new THREE.Scene();
+var bgScene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
+var bgCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
+var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-var SPEED = 0.01;
+var controls = new THREE.OrbitControls(bgCamera, renderer.domElement);
+controls.addEventListener('change', function () {
+    console.log(bgCamera.position);
+    console.log(bgCamera.rotation);
+});
+controls.target.set(0, 0, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.enableZoom = true;
 
-function init() {
-    scene = new THREE.Scene();
+//document.body.appendChild(renderer.domElement);
+document.getElementById('container').appendChild(renderer.domElement);
 
-    initMesh();
-    initCamera();
-    initLights();
-    initRenderer();
-    var controls = new THREE.OrbitControls( camera, renderer.domElement );
-//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.enableZoom = false;
-
-    document.body.appendChild(renderer.domElement);
-}
-
-function initCamera() {
-    camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT, 1, 10);
-    camera.position.set(0,0,2.5);
-    camera.lookAt(scene.position);
-}
+camera.position.set(2, 0.6, -0.6);
+camera.rotation.set(-2.4, 1.2, 2.4);
+bgCamera.position.set(1, 0, 0);
+bgCamera.rotation.set(0,1.5,0);
 
 
-function initRenderer() {
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(WIDTH, HEIGHT);
-}
+// Lights
+var light = new THREE.PointLight(0xffffff, 1.2, 100);
+light.position.set(6, 5, 5.5);
+scene.add(light);
 
-function initLights() {
-    var light = new THREE.PointLight( 0xffffff, 1.2, 100 );
-    light.position.set( 0,0,3 );
-    scene.add( light );
+var light2 = new THREE.PointLight(0xffffff, 0.3, 100);
+light2.position.set(3, 2, -2.5);
+scene.add(light2);
 
-}
+var bgLight = new THREE.PointLight(0xffffff, 1.1, 100);
+bgLight.position.set(3, 2, -2.5);
+bgScene.add(bgLight);
 
-var mesh = null;
-function initMesh() {
-    var loader = new THREE.JSONLoader();
-    loader.load('models/untitled7.json', function(geometry) {
-        mesh = new THREE.Mesh(geometry, planeMaterial);
-        mesh.scale.x = mesh.scale.y = mesh.scale.z = 0.75;
-        mesh.translation = THREE.GeometryUtils.center(geometry);
-        scene.add(mesh);
-    });
-}
 
+var g = new THREE.PlaneGeometry(25, 25, 60, 60);
+g.vertices.map(function (vertex) {
+    vertex.x += -1 + Math.random() / 5;
+    vertex.y += -1 + Math.random() / 5;
+    vertex.z = -.5 + Math.random() / 5;
+    return vertex;
+});
+var plane = new THREE.Mesh(g, backgroundMaterial);
+plane.position.set(-5, 0, 0);
+plane.rotation.y = Math.PI / 2;
+bgScene.add(plane);
+var loader = new THREE.JSONLoader();
+loader.load('models/loHrib.json', function (geometry) {
+    var mesh = new THREE.Mesh(geometry, planeMaterial);
+    mesh.position.y = -0.3;
+    scene.add(mesh);
+});
 
 function render() {
     requestAnimationFrame(render);
     renderer.render(scene, camera);
 }
 
-init();
 render();
